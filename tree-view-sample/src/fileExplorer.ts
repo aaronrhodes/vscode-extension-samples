@@ -296,13 +296,19 @@ export class FileSystemProvider implements vscode.TreeDataProvider<Entry>, vscod
 }
 
 export class FileExplorer {
+	private _treeView: vscode.TreeView<Entry>;
+
 	constructor(context: vscode.ExtensionContext) {
 		const treeDataProvider = new FileSystemProvider();
-		context.subscriptions.push(vscode.window.createTreeView('fileExplorer', { treeDataProvider }));
+
+		this._treeView = vscode.window.createTreeView('fileExplorer', { treeDataProvider });
+		context.subscriptions.push(this._treeView);
+
 		vscode.commands.registerCommand('fileExplorer.openFile', (resource) => this.openResource(resource));
 	}
 
 	private openResource(resource: vscode.Uri): void {
 		vscode.window.showTextDocument(resource);
+		this._treeView.description = path.basename(resource.path);
 	}
 }
